@@ -1,0 +1,51 @@
+# flashlight-sequence
+#
+# IMPORTED targets
+# ^^^^^^^^^^^^^^^^
+#
+# Configuration file for flashlight-sequence. Provides the following
+# `IMPORTED` targets:
+#
+# ``flashlight::flashlight-sequence``
+#   The flashlight-sequence library.
+#
+# The above targets can be linked with your build using ``target_link_library``.
+# Example:
+#
+#   add_executable(myexecutable mySource.cpp)
+#   target_link_library(myexecutable PRIVATE flashlight::flashlight-sequence)
+#
+# The above properly links flashlight-sequence with myexecutable. No call to
+# ``target_include_directories`` is required.
+#
+
+# Dependencies
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR})
+include(CMakeFindDependencyMacro)
+find_dependency(OpenMP)
+if (@FL_SEQUENCE_USE_CUDA@)
+  # TODO: use FindCUDAToolkit after requiring CMake >= 3.17
+  enable_language(CUDA)
+endif()
+# Remove this dir from module path
+list(REMOVE_AT CMAKE_MODULE_PATH -1)
+# Config variables
+set(FL_SEQUENCE_USE_CUDA @FL_SEQUENCE_USE_CUDA@)
+
+################################################################################
+
+@PACKAGE_INIT@
+
+# Add IMPORTED targets
+if(NOT TARGET flashlight::flashlight-sequence)
+  if(EXISTS @PACKAGE_CMAKE_DIR@/flashlight-sequence-targets.cmake)
+    include(@PACKAGE_CMAKE_DIR@/flashlight-sequence-targets.cmake)
+  endif()
+endif()
+
+# For legacy configurations
+set(flashlight-sequence_LIBRARIES flashlight::flashlight-sequence)
+if (EXISTS @PACKAGE_INCLUDE_DIRS@)
+  set(flashlight-sequence_INCLUDE_DIRS @PACKAGE_INCLUDE_DIRS@)
+endif()
+set(flashlight-sequence_FOUND 1)
