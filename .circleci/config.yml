@@ -110,14 +110,11 @@ commands:
           command: |
             mkdir -p test_project && cd test_project && \
             echo -e "\
-              #include <flashlight/lib/sequence/criterion/ViterbiPath.h> \n
-              #include <iostream>                                    \n
-              int main() {                                           \n
-                fl::lib::text::Dictionary myDict;                    \n
-                myDict.addEntry(\"A\", 1);                           \n
-                myDict.addEntry(\"B\", 2);                           \n
-                return 0;                                            \n
-              }                                                      \n
+              #include <flashlight/lib/sequence/criterion/cpu/ViterbiPath.h> \n
+              int main() {                                                   \n
+                using ViterbiPath = fl::lib::cpu::ViterbiPath<float>;        \n
+                return 0;                                                    \n
+              }                                                              \n
             " > main.cpp && \
             echo -e "\
               cmake_minimum_required(VERSION 3.10)                                \n
