@@ -1,0 +1,294 @@
+version: 2.1
+
+macos_env: &macos_env
+  macos:
+    xcode: 13.4.1
+  resource_class: large
+  environment:
+    HOMEBREW_NO_AUTO_UPDATE: "1"
+
+orbs:
+  win: circleci/windows@5.0.0
+
+commands:
+  install_ubuntu_build_dependencies:
+    steps:
+      - run:
+          name: "Install Build Dependencies"
+          command: |
+            sudo apt -y update && \
+            sudo apt -y install build-essential python3-dev python3-pip cmake
+  install_macos_build_dependencies:
+    steps:
+      - run:
+          name: "Install Build Dependencies"
+          command: |
+            brew install cmake googletest
+  install_msvc_build_dependencies:
+    steps:
+      - run:
+          name: "Install Build Dependencies"
+          command: |
+            choco install cmake python3 -y
+      # windows needs a path modification
+      - run:
+          name: "Set PATH to find CMake"
+          command: echo 'export PATH="$PATH:/c/Program Files/CMake/bin"' >> $BASH_ENV
+  build_flashlight_sequence:
+    parameters:
+      use_cuda:
+        type: string
+        default: "ON"
+      build_shared_libs:
+        type: string
+        default: "OFF"
+      build_code_coverage:
+        type: string
+        default: "OFF"
+      platform:
+        type: string
+        default: "linux"
+    steps:
+      - run:
+          name: "Build and Install Flashlight Sequence"
+          command: |
+            mkdir build && \
+            cmake -S . -B build \
+              -DBUILD_SHARED_LIBS=<< parameters.build_shared_libs >> \
+              -DFL_SEQUENCE_USE_CUDA=<< parameters.use_cuda >> \
+              -DFL_SEQUENCE_CODE_COVERAGE=<< parameters.build_code_coverage >>
+            cmake --build build --parallel
+      # only test install with non-Windows platforms (TODO: fix this)
+      - when:
+          condition:
+            not:
+              equal: ["windows", << parameters.platform >>]
+          steps:
+            - run:
+                name: "Run Install Step"
+                command: sudo cmake --install build
+      # linux needs ldconfig
+      - when:
+          condition:
+            equal: ["linux", << parameters.platform >>]
+          steps:
+            - run:
+                name: "Configure shared lib paths"
+                command: sudo ldconfig
+  install_python_bindings:
+    parameters:
+      use_cuda:
+        type: string
+        default: "ON"
+    steps:
+      - run:
+          name: "Install Python Bindings"
+          command: |
+            pip3 install packaging && \
+            pip3 install numpy && \
+            cd bindings/python && \
+            USE_CUDA=<< parameters.use_cuda >> pip3 install -e .
+  run_python_tests:
+    parameters:
+      use_cuda:
+        type: string
+        default: "ON"
+    steps:
+      - run:
+          name: "Run Python Binding Tests"
+          command: |
+            cd bindings/python/test && USE_CUDA=<< parameters.use_cuda >> \
+            python3 -m unittest discover -v .
+  test_with_external_project:
+    parameters:
+      build_shared_libs:
+        type: string
+        default: "OFF"
+    steps:
+      - run:
+          name: Set up dependent external project
+          command: |
+            mkdir -p test_project && cd test_project && \
+            echo -e "\
+              #include <flashlight/lib/sequence/criterion/ViterbiPath.h> \n
+              #include <iostream>                                    \n
+              int main() {                                           \n
+                fl::lib::text::Dictionary myDict;                    \n
+                myDict.addEntry(\"A\", 1);                           \n
+                myDict.addEntry(\"B\", 2);                           \n
+                return 0;                                            \n
+              }                                                      \n
+            " > main.cpp && \
+            echo -e "\
+              cmake_minimum_required(VERSION 3.10)                                \n
+              project(test_project)                                               \n
+              set(CMAKE_CXX_STANDARD 17)                                          \n
+              set(CMAKE_CXX_STANDARD_REQUIRED ON)                                 \n
+              add_executable(main main.cpp)                                       \n
+              find_package(flashlight-sequence CONFIG REQUIRED)                   \n
+              target_link_libraries(main PRIVATE flashlight::flashlight-sequence) \n
+            " > CMakeLists.txt
+      - run:
+          name: Build dependent external project
+          command: |
+            cd test_project && mkdir -p build
+            cmake -S . -B build -DBUILD_SHARED_LIBS=<< parameters.build_shared_libs >> && \
+            cmake --build build --parallel && ./build/main
+  run_codecov:
+    steps:
+      - run:
+          name: "Get code coverage"
+          command: |
+            sudo apt-get install -y --no-install-recommends lcov curl && \
+            lcov --capture --directory . --output-file coverage.info && \
+            lcov --remove coverage.info '/usr/*' --output-file coverage.info &&
+            lcov --remove coverage.info '*/include/*' --output-file coverage.info && \
+            lcov --remove coverage.info '*/gtest/*' --output-file coverage.info && \
+            lcov --list coverage.info && \
+            bash <(curl -s https://codecov.io/bash) -f coverage.info \
+            -t $CODECOV_TOKEN \
+            || echo 'Codecov did not collect coverage reports'
+jobs:
+  ubuntu_20_gcc_9:
+    parameters:
+      use_cuda:
+        type: string
+        default: "ON"
+      build_shared_libs:
+        type: string
+        default: "OFF"
+      run_codecov:
+        type: string
+        default: ""
+    docker:
+      - image: cimg/base:2021.04
+    steps:
+      - checkout
+      - install_ubuntu_build_dependencies
+      - build_flashlight_sequence:
+          build_shared_libs: << parameters.build_shared_libs >>
+          use_cuda: << parameters.use_cuda >>
+          build_code_coverage: << parameters.run_codecov >>
+      - run:
+          name: "Run C++ Tests"
+          command: |
+            cd build && ctest
+      - test_with_external_project:
+          build_shared_libs: << parameters.build_shared_libs >>
+      - when:
+          condition: << parameters.run_codecov >>
+          steps:
+            - run_codecov
+
+  ubuntu_20_gcc_9_python:
+    parameters:
+      use_cuda:
+        type: string
+        default: "ON"
+    docker:
+      - image: cimg/base:2021.04
+    steps:
+      - checkout
+      - install_ubuntu_build_dependencies
+      - install_python_bindings:
+          use_cuda: << parameters.use_cuda >>
+      - run_python_tests:
+          use_cuda: << parameters.use_cuda >>
+
+  macos_clang_13:
+    parameters:
+      use_cuda:
+        type: string
+        default: "ON"
+      build_shared_libs:
+        type: string
+        default: "OFF"
+    <<: *macos_env
+    shell: /bin/bash -eux -o pipefail
+    steps:
+      - checkout
+      - install_macos_build_dependencies
+      - build_flashlight_sequence:
+          platform: "macos"
+          use_cuda: << parameters.use_cuda >>
+          build_shared_libs: << parameters.build_shared_libs >>
+
+  macos_clang_13_python:
+    parameters:
+      use_cuda:
+        type: string
+        default: "ON"
+    <<: *macos_env
+    shell: /bin/bash -eux -o pipefail
+    steps:
+      - checkout
+      - install_macos_build_dependencies
+      - install_python_bindings:
+          use_cuda: << parameters.use_cuda >>
+      - run_python_tests:
+          use_cuda: << parameters.use_cuda >>
+
+  windows_msvc:
+    parameters:
+      build_shared_libs:
+        type: string
+        default: "OFF"
+    executor:
+      name: win/default
+      shell: bash.exe
+    steps:
+      - checkout
+      - install_msvc_build_dependencies
+      - build_flashlight_sequence:
+          platform: "windows"
+          use_cuda: "OFF"
+
+  windows_msvc_python:
+    parameters:
+      use_cuda:
+        type: string
+        default: "OFF"
+    executor:
+      name: win/default
+      shell: bash.exe
+    steps:
+      - checkout
+      - install_msvc_build_dependencies
+      - install_python_bindings:
+          use_cuda: "OFF"
+
+workflows:
+  build-test:
+    jobs:
+      - ubuntu_20_gcc_9:
+          name: "Ubuntu 20.04 gcc-9 static"
+          use_cuda: "OFF"
+      - ubuntu_20_gcc_9:
+          name: "Ubuntu 20.04 gcc-9 shared"
+          use_cuda: "OFF"
+          build_shared_libs: "ON"
+      - ubuntu_20_gcc_9:
+          name: "Ubuntu 20.04 gcc-9 static + CUDA"
+          use_cuda: "ON"
+      - ubuntu_20_gcc_9:
+          name: "Ubuntu 20.04 gcc-9 shared + CUDA"
+          use_cuda: "ON"
+          build_shared_libs: "ON"
+          run_codecov: "ON"
+      - ubuntu_20_gcc_9_python:
+          name: "Ubuntu 20.04 gcc-9 Python"
+          use_cuda: "OFF"
+      - ubuntu_20_gcc_9_python:
+          name: "Ubuntu 20.04 gcc-9 Python + CUDA"
+          use_cuda: "ON"
+      - macos_clang_13:
+          name: "macOS Clang 13 - shared"
+          use_cuda: "ON"
+          build_shared_libs: "ON"
+      - macos_clang_13_python:
+          name: "macOS Clang 13 Python"
+          use_cuda: "ON"
+      - windows_msvc:
+          name: "Windows VS 17 2022 | MSVC 19.33"
+      - windows_msvc_python:
+          name: "Windows VS 17 2022 | MSVC 19.33 Python"
