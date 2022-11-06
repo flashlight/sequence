@@ -28,7 +28,7 @@ commands:
       - run:
           name: "Install Build Dependencies"
           command: |
-            brew install cmake googletest
+            brew install cmake libomp googletest
   install_msvc_build_dependencies:
     steps:
       - run:
