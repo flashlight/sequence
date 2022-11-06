@@ -146,12 +146,49 @@ commands:
             bash <(curl -s https://codecov.io/bash) -f coverage.info \
             -t $CODECOV_TOKEN \
             || echo 'Codecov did not collect coverage reports'
+    run_ubuntu_20_gcc_9:
+      parameters:
+        use_cuda:
+          type: string
+          default: "ON"
+        build_shared_libs:
+          type: string
+          default: "OFF"
+        run_codecov:
+          type: string
+          default: ""
+      steps:
+        - checkout
+        - install_ubuntu_build_dependencies
+        - build_flashlight_sequence:
+            build_shared_libs: << parameters.build_shared_libs >>
+            use_cuda: << parameters.use_cuda >>
+            build_code_coverage: << parameters.run_codecov >>
+        - run:
+            name: "Run C++ Tests"
+            command: |
+              cd build && ctest
+        - test_with_external_project:
+            build_shared_libs: << parameters.build_shared_libs >>
+        - when:
+            condition: << parameters.run_codecov >>
+            steps:
+              - run_codecov
+    run_ubuntu_20_gcc_9_python:
+      parameters:
+        use_cuda:
+          type: string
+          default: "ON"
+      steps:
+        - checkout
+        - install_ubuntu_build_dependencies
+        - install_python_bindings:
+            use_cuda: << parameters.use_cuda >>
+        - run_python_tests
+
 jobs:
   ubuntu_20_gcc_9:
     parameters:
-      use_cuda:
-        type: string
-        default: "ON"
       build_shared_libs:
         type: string
         default: "OFF"
@@ -161,36 +198,38 @@ jobs:
     docker:
       - image: cimg/base:2021.04
     steps:
-      - checkout
-      - install_ubuntu_build_dependencies
-      - build_flashlight_sequence:
+      - run_ubuntu_20_gcc_9:
+          use_cuda: "OFF"
           build_shared_libs: << parameters.build_shared_libs >>
-          use_cuda: << parameters.use_cuda >>
-          build_code_coverage: << parameters.run_codecov >>
-      - run:
-          name: "Run C++ Tests"
-          command: |
-            cd build && ctest
-      - test_with_external_project:
+          run_codecov: << parameters.run_codecov >>
+
+  ubuntu_20_gcc_9_cuda:
+    parameters:
+      build_shared_libs:
+        type: string
+        default: "OFF"
+      run_codecov:
+        type: string
+        default: ""
+    <<: *gpu
+    steps:
+      - run_ubuntu_20_gcc_9:
+          use_cuda: "ON"
           build_shared_libs: << parameters.build_shared_libs >>
-      - when:
-          condition: << parameters.run_codecov >>
-          steps:
-            - run_codecov
+          run_codecov: << parameters.run_codecov >>
 
   ubuntu_20_gcc_9_python:
-    parameters:
-      use_cuda:
-        type: string
-        default: "ON"
     docker:
       - image: cimg/base:2021.04
     steps:
-      - checkout
-      - install_ubuntu_build_dependencies
-      - install_python_bindings:
-          use_cuda: << parameters.use_cuda >>
-      - run_python_tests
+      - run_ubuntu_20_gcc_9_python:
+          use_cuda: "OFF"
+  
+  ubuntu_20_gcc_9_python_cuda:
+    <<: *gpu
+    steps:
+      - run_ubuntu_20_gcc_9_python:
+          use_cuda: "ON"
 
   macos_clang_13:
     parameters:
@@ -258,18 +297,14 @@ workflows:
           build_shared_libs: "ON"
       - ubuntu_20_gcc_9:
           name: "Ubuntu 20.04 gcc-9 static + CUDA"
-          use_cuda: "ON"
-      - ubuntu_20_gcc_9:
+      - ubuntu_20_gcc_9_cuda:
           name: "Ubuntu 20.04 gcc-9 shared + CUDA"
-          use_cuda: "ON"
           build_shared_libs: "ON"
           run_codecov: "ON"
       - ubuntu_20_gcc_9_python:
           name: "Ubuntu 20.04 gcc-9 Python"
-          use_cuda: "OFF"
-      - ubuntu_20_gcc_9_python:
+      - ubuntu_20_gcc_9_python_cuda:
           name: "Ubuntu 20.04 gcc-9 Python + CUDA"
-          use_cuda: "ON"
       - macos_clang_13:
           name: "macOS Clang 13 - shared"
           build_shared_libs: "ON"
