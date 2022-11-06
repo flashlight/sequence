@@ -7,6 +7,11 @@ macos_env: &macos_env
   environment:
     HOMEBREW_NO_AUTO_UPDATE: "1"
 
+gpu: &gpu
+  machine:
+    image: ubuntu-2004-cuda-11.4:202110-01
+  resource_class: gpu.nvidia.large
+
 orbs:
   win: circleci/windows@5.0.0
 
@@ -89,15 +94,11 @@ commands:
             cd bindings/python && \
             USE_CUDA=<< parameters.use_cuda >> pip3 install -e .
   run_python_tests:
-    parameters:
-      use_cuda:
-        type: string
-        default: "ON"
     steps:
       - run:
           name: "Run Python Binding Tests"
           command: |
-            cd bindings/python/test && USE_CUDA=<< parameters.use_cuda >> \
+            cd bindings/python/test &&  \
             python3 -m unittest discover -v .
   test_with_external_project:
     parameters:
@@ -189,14 +190,10 @@ jobs:
       - install_ubuntu_build_dependencies
       - install_python_bindings:
           use_cuda: << parameters.use_cuda >>
-      - run_python_tests:
-          use_cuda: << parameters.use_cuda >>
+      - run_python_tests
 
   macos_clang_13:
     parameters:
-      use_cuda:
-        type: string
-        default: "ON"
       build_shared_libs:
         type: string
         default: "OFF"
@@ -207,23 +204,18 @@ jobs:
       - install_macos_build_dependencies
       - build_flashlight_sequence:
           platform: "macos"
-          use_cuda: << parameters.use_cuda >>
+          use_cuda: "OFF"
           build_shared_libs: << parameters.build_shared_libs >>
 
   macos_clang_13_python:
-    parameters:
-      use_cuda:
-        type: string
-        default: "ON"
     <<: *macos_env
     shell: /bin/bash -eux -o pipefail
     steps:
       - checkout
       - install_macos_build_dependencies
       - install_python_bindings:
-          use_cuda: << parameters.use_cuda >>
-      - run_python_tests:
-          use_cuda: << parameters.use_cuda >>
+          use_cuda: "OFF"
+      - run_python_tests
 
   windows_msvc:
     parameters:
@@ -280,11 +272,9 @@ workflows:
           use_cuda: "ON"
       - macos_clang_13:
           name: "macOS Clang 13 - shared"
-          use_cuda: "ON"
           build_shared_libs: "ON"
       - macos_clang_13_python:
           name: "macOS Clang 13 Python"
-          use_cuda: "ON"
       - windows_msvc:
           name: "Windows VS 17 2022 | MSVC 19.33"
       - windows_msvc_python:
