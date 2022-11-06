@@ -146,45 +146,45 @@ commands:
             bash <(curl -s https://codecov.io/bash) -f coverage.info \
             -t $CODECOV_TOKEN \
             || echo 'Codecov did not collect coverage reports'
-    run_ubuntu_20_gcc_9:
-      parameters:
-        use_cuda:
-          type: string
-          default: "ON"
-        build_shared_libs:
-          type: string
-          default: "OFF"
-        run_codecov:
-          type: string
-          default: ""
-      steps:
-        - checkout
-        - install_ubuntu_build_dependencies
-        - build_flashlight_sequence:
-            build_shared_libs: << parameters.build_shared_libs >>
-            use_cuda: << parameters.use_cuda >>
-            build_code_coverage: << parameters.run_codecov >>
-        - run:
-            name: "Run C++ Tests"
-            command: |
-              cd build && ctest
-        - test_with_external_project:
-            build_shared_libs: << parameters.build_shared_libs >>
-        - when:
-            condition: << parameters.run_codecov >>
-            steps:
-              - run_codecov
-    run_ubuntu_20_gcc_9_python:
-      parameters:
-        use_cuda:
-          type: string
-          default: "ON"
-      steps:
-        - checkout
-        - install_ubuntu_build_dependencies
-        - install_python_bindings:
-            use_cuda: << parameters.use_cuda >>
-        - run_python_tests
+  run_ubuntu_20_gcc_9:
+    parameters:
+      use_cuda:
+        type: string
+        default: "ON"
+      build_shared_libs:
+        type: string
+        default: "OFF"
+      run_codecov:
+        type: string
+        default: ""
+    steps:
+      - checkout
+      - install_ubuntu_build_dependencies
+      - build_flashlight_sequence:
+          build_shared_libs: << parameters.build_shared_libs >>
+          use_cuda: << parameters.use_cuda >>
+          build_code_coverage: << parameters.run_codecov >>
+      - run:
+          name: "Run C++ Tests"
+          command: |
+            cd build && ctest
+      - test_with_external_project:
+          build_shared_libs: << parameters.build_shared_libs >>
+      - when:
+          condition: << parameters.run_codecov >>
+          steps:
+            - run_codecov
+  run_ubuntu_20_gcc_9_python:
+    parameters:
+      use_cuda:
+        type: string
+        default: "ON"
+    steps:
+      - checkout
+      - install_ubuntu_build_dependencies
+      - install_python_bindings:
+          use_cuda: << parameters.use_cuda >>
+      - run_python_tests
 
 jobs:
   ubuntu_20_gcc_9:
@@ -224,7 +224,7 @@ jobs:
     steps:
       - run_ubuntu_20_gcc_9_python:
           use_cuda: "OFF"
-  
+
   ubuntu_20_gcc_9_python_cuda:
     <<: *gpu
     steps:
@@ -290,12 +290,10 @@ workflows:
     jobs:
       - ubuntu_20_gcc_9:
           name: "Ubuntu 20.04 gcc-9 static"
-          use_cuda: "OFF"
       - ubuntu_20_gcc_9:
           name: "Ubuntu 20.04 gcc-9 shared"
-          use_cuda: "OFF"
           build_shared_libs: "ON"
-      - ubuntu_20_gcc_9:
+      - ubuntu_20_gcc_9_cuda:
           name: "Ubuntu 20.04 gcc-9 static + CUDA"
       - ubuntu_20_gcc_9_cuda:
           name: "Ubuntu 20.04 gcc-9 shared + CUDA"
