@@ -160,6 +160,14 @@ commands:
     steps:
       - checkout
       - install_ubuntu_build_dependencies
+      - when:    
+          condition:   
+            equal: ["ON", << parameters.use_cuda >>]
+          steps:
+            - run:
+                name: "Set up CUDA Path"
+                command: |
+                  echo 'export PATH="/usr/local/cuda/bin:$PATH"' >> $BASH_ENV
       - build_flashlight_sequence:
           build_shared_libs: << parameters.build_shared_libs >>
           use_cuda: << parameters.use_cuda >>
