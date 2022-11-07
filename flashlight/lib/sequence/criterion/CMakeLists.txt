@@ -22,4 +22,10 @@ if (FL_SEQUENCE_USE_CUDA)
     ${CMAKE_CURRENT_LIST_DIR}/cuda/FullConnectionCriterion.cu
     ${CMAKE_CURRENT_LIST_DIR}/cuda/ViterbiPath.cu
     )
+
+  target_include_directories(
+    flashlight-sequence
+    PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES}>
+    )
 endif()
