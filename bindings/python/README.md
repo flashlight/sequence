@@ -17,8 +17,15 @@
 
 Once the dependencies are satisfied, from the project root, use:
 ```
-pip install -e bindings/python
+cd bindings/python
+python setup.py install
 ```
+
+or locally in editable mode (`-e` is required as libs are built outside of the bindings directory)
+```
+pip install -e .
+```
+
 (`pypi` installation coming soon)
 
 **Note:** if you encounter errors, you'll probably have to `rm -rf build dist` before retrying the install.

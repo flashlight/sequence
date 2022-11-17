@@ -103,7 +103,8 @@ commands:
           command: |
             pip3 install packaging && \
             pip3 install numpy && \
-            USE_CUDA=<< parameters.use_cuda >> pip3 install -e bindings/python
+            cd bindings/python && \
+            USE_CUDA=<< parameters.use_cuda >> python3 setup.py install
   run_python_tests:
     steps:
       - run:

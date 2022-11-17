@@ -2,7 +2,6 @@
 build
 release
 debug
-*.so
 
 # FB
 fb
@@ -41,6 +40,12 @@ wheels/
 *.lo
 *.o
 *.obj
+
+# Compiled Dynamic libraries
+*.so
+*.so.*
+*.dylib
+*.dll
 
 # Compiled Static libraries
 *.lai
