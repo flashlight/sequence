@@ -17,7 +17,8 @@
 Flashlight Sequence has Python bindings. To install the bindings from source, [optionally install CUDA] then clone the repo and build:
 ```shell
 git clone https://github.com/flashlight/sequence && cd sequence
-pip install -e bindings/python
+cd bindings/python
+python setup.py install
 ```
 To install with CUDA support, set the environment variable `USE_CUDA=1` when running the install command.
 

@@ -101,7 +101,6 @@ setup(
     author_email="oncall+flashlight@xmail.facebook.com",
     description="Flashlight Sequence bindings for python",
     long_description="",
-    namespace_packages=["flashlight", "flashlight.lib"],
     packages=["flashlight.lib.sequence"],
     ext_modules=[
         CMakeExtension("flashlight.lib.sequence.criterion"),
