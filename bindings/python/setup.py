@@ -61,6 +61,7 @@ class CMakeBuild(build_ext):
             "-DBUILD_SHARED_LIBS=ON",
             "-DFL_SEQUENCE_BUILD_TESTS=OFF",
             "-DFL_SEQUENCE_BUILD_PYTHON=ON",
+            "-DFL_SEQUENCE_BUILD_STANDALONE=OFF",
             "-DFL_SEQUENCE_USE_CUDA=" + use_cuda,
         ]
         cfg = "Debug" if self.debug else "Release"

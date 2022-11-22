@@ -52,6 +52,8 @@ make install # install at the CMAKE_INSTALL_PREFIX
 ```
 To enable CUDA while building, pass `-DFL_SEQUENCE_USE_CUDA=ON` to CMake. To disable building tests, pass `-DFL_SEQUENCE_BUILD_TESTS=OFF`.
 
+If building with CUDA < 11, [NVIDIA cub](https://github.com/NVIDIA/cub) is required. It will be downloaded automatically if not found; the `FL_SEQUENCE_BUILD_STANDALONE` build option controls this behavior.
+
 ### Adding Flashlight Sequence to a C++ Project
 
 Given a simple `project.cpp` file that includes and links to Flashlight Sequence:

@@ -11,8 +11,6 @@ if(CCACHE_PROGRAM)
 endif()
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 option(FL_SEQUENCE_CODE_COVERAGE "Enable coverage reporting" OFF)
 
@@ -33,10 +31,16 @@ include(${PROJECT_SOURCE_DIR}/cmake/InternalUtils.cmake)
 option(FL_SEQUENCE_USE_CUDA "Build with CUDA support" OFF)
 option(FL_SEQUENCE_BUILD_TESTS "Build tests" ON)
 option(FL_SEQUENCE_BUILD_PYTHON "Build Python bindings" OFF)
+option(FL_SEQUENCE_BUILD_STANDALONE "Build standalone installation" ON)
 
 # ------------------------ Build ------------------------
 
 add_library(flashlight-sequence)
+
+set_target_properties(flashlight-sequence PROPERTIES
+  CXX_STANDARD 17
+  CXX_STANDARD_REQUIRED ON
+  )
 
 target_include_directories(
   flashlight-sequence
@@ -46,6 +50,15 @@ target_include_directories(
 
 if (FL_SEQUENCE_USE_CUDA)
   enable_language(CUDA)
+
+  # To support nvcc with CUDA < 11
+  set_target_properties(
+    flashlight-sequence
+    PROPERTIES
+    CUDA_STANDARD 14
+    CUDA_STANDARD_REQUIRED ON
+    )
+
   target_compile_definitions(
     flashlight-sequence
     PUBLIC
@@ -58,6 +71,8 @@ include(${PROJECT_SOURCE_DIR}/flashlight/lib/sequence/CMakeLists.txt)
 if (FL_SEQUENCE_BUILD_PYTHON)
   include(${PROJECT_SOURCE_DIR}/bindings/python/CMakeLists.txt)
 endif()
+
+add_library(flashlight::flashlight-sequence ALIAS flashlight-sequence)
 
 # ------------------------ Tests + Code Coverage------------------------
 
