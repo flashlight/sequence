@@ -111,12 +111,16 @@ commands:
             cd bindings/python && \
             USE_CUDA=<< parameters.use_cuda >> python setup.py install
   run_python_tests:
+    parameters:
+      use_cuda:
+        type: string
+        default: "ON"
     steps:
       - run:
           name: "Run Python Binding Tests"
           command: |
             cd bindings/python/test &&  \
-            python -m unittest discover -v .
+            USE_CUDA=<< parameters.use_cuda >> python -m unittest discover -v .
   test_with_external_project:
     parameters:
       build_shared_libs:
@@ -203,7 +207,8 @@ commands:
           use_cuda: << parameters.use_cuda >>
       - install_python_bindings:
           use_cuda: << parameters.use_cuda >>
-      - run_python_tests
+      - run_python_tests:
+          use_cuda: << parameters.use_cuda >>
 
 jobs:
   ubuntu_20_gcc_9:
@@ -273,7 +278,8 @@ jobs:
       - install_macos_build_dependencies
       - install_python_bindings:
           use_cuda: "OFF"
-      - run_python_tests
+      - run_python_tests:
+          use_cuda: "OFF"
 
   windows_msvc:
     parameters:
