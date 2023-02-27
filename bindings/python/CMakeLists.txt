@@ -39,10 +39,14 @@ function (add_pybind11_extension ext_name)
     ${PROJECT_SOURCE_DIR}
     )
 
-  if (CMAKE_LIBRARY_OUTPUT_DIRECTORY)
-    set_target_properties(${ext_name} PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${relpath})
+  if (FL_SEQUENCE_BUILD_PYTHON_PACKAGE)
+    set_target_properties(${ext_name} PROPERTIES OUTPUT_NAME ${ext_name})
+  else()
+    if (CMAKE_LIBRARY_OUTPUT_DIRECTORY)
+      set_target_properties(${ext_name} PROPERTIES
+        LIBRARY_OUTPUT_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${relpath})
+    endif()
   endif()
-  set_target_properties(${ext_name} PROPERTIES OUTPUT_NAME ${ext_name})
 endfunction ()
 
 add_pybind11_extension(flashlight_lib_sequence_criterion)
