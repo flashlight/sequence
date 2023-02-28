@@ -36,10 +36,9 @@ def check_env_flag(name, default=""):
 
 def get_local_version_suffix() -> str:
     date_suffix = datetime.datetime.now().strftime("%Y%m%d")
-    # git_hash = subprocess.check_output(
-    #     ["git", "rev-parse", "--short", "HEAD"], cwd=Path(__file__).parent
-    # ).decode("ascii")[:-1]
-    return "foo"  # FIXME
+    git_hash = subprocess.check_output(
+        ["git", "rev-parse", "--short", "HEAD"], cwd=Path(__file__).parent
+    ).decode("ascii")[:-1]
     return f"+{git_hash}.d{date_suffix}"
 
 
@@ -145,7 +144,7 @@ def main():
 
     setup(
         name="flashlight-sequence",
-        version="0.1",
+        version=version,
         url="https://github.com/flashlight/sequence",
         author="Jacob Kahn",
         author_email="jacobkahn1@gmail.com",
