@@ -32,6 +32,7 @@ option(FL_SEQUENCE_USE_CUDA "Build with CUDA support" OFF)
 option(FL_SEQUENCE_BUILD_TESTS "Build tests" ON)
 option(FL_SEQUENCE_BUILD_PYTHON "Build Python bindings" OFF)
 option(FL_SEQUENCE_BUILD_STANDALONE "Build standalone installation" ON)
+option(FL_SEQUENCE_BUILD_PYTHON_PACKAGE "Build packaging-ready Python artifacts" OFF)
 
 # ------------------------ Build ------------------------
 
