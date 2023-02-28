@@ -102,11 +102,12 @@ commands:
           name: "Setup virtualenv"
           command: |
             python3 -m venv venv
+            source venv/bin/activate
+            pip install --upgrade pip
             echo "source venv/bin/activate" >> $BASH_ENV
       - run:
           name: "Install Python Bindings"
           command: |
-            pip install --upgrade pip
             pip install numpy
             USE_CUDA=<< parameters.use_cuda >> pip install -v .
   run_python_tests:
