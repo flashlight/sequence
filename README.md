@@ -17,18 +17,17 @@
 Flashlight Sequence has Python bindings. To install the bindings from source, [optionally install CUDA] then clone the repo and build:
 ```shell
 git clone https://github.com/flashlight/sequence && cd sequence
-cd bindings/python
-python setup.py install
+pip install .
 ```
 To install with CUDA support, set the environment variable `USE_CUDA=1` when running the install command.
 
 See the [full Python binding documentation](bindings/python) for examples and more.
 
 ## Building and Installing
-[**From Source (C++)**](#building-from-source) | [**From Source (Python)**](bindings/python#build-instructions) | [**Adding to Your Own Project (C++)**](#adding-flashlight-sequence-to-a-c++-project)
+[**From Source (C++)**](#building-from-source) | [**From Source (Python)**](bindings/python#build-instructions) | [**Adding to Your Own Project (C++)**](#adding-flashlight-sequence-to-a-c-project)
 
 ### Requirements
-At minimum, compilation requires:
+At minimum, C++ compilation requires:
 - A C++ compiler with good C++17 support (e.g. gcc/g++ >= 7)
 - [CMake](https://cmake.org/) — version 3.16 or later, and ``make``
 - A Linux-based operating system.
