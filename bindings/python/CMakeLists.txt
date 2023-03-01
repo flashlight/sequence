@@ -5,8 +5,12 @@ if (NOT BUILD_SHARED_LIBS)
     "set BUILD_SHARED_LIBS to ON.")
 endif()
 
-include(${PROJECT_SOURCE_DIR}/cmake/Buildpybind11.cmake)
-include(${PROJECT_SOURCE_DIR}/cmake/pybind11Tools.cmake)
+find_package(Python3 REQUIRED COMPONENTS Interpreter Development.Module)
+find_package(pybind11 CONFIG)
+if (NOT pybind11_FOUND)
+  message(STATUS "Could not find pybind11 -- downloading from source.")
+  include(${PROJECT_SOURCE_DIR}/cmake/Buildpybind11.cmake)
+endif()
 
 function (add_pybind11_extension ext_name)
   string(REPLACE "_" ";" modlist ${ext_name})
@@ -35,7 +39,6 @@ function (add_pybind11_extension ext_name)
     ${PROJECT_SOURCE_DIR}
     )
 
-  add_dependencies(${ext_name} pybind11)
   if (CMAKE_LIBRARY_OUTPUT_DIRECTORY)
     set_target_properties(${ext_name} PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${relpath})
   endif()

@@ -10,7 +10,7 @@
 ### Dependencies
 `python >= 3.6` is required with the following packages installed:
 - [packaging](https://pypi.org/project/packaging/)
-- [cmake](https://cmake.org/) >= 3.16, and `make`
+- [cmake](https://cmake.org/) >= 3.18, and `make`
 - CUDA is optionally required.
 
 ### Build Instructions

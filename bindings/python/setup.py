@@ -41,8 +41,10 @@ class CMakeBuild(build_ext):
             )
 
         cmake_version = re.search(r"version\s*([\d.]+)", out.decode().lower()).group(1)
-        if version.parse(cmake_version) < version.parse("3.16"):
-            raise RuntimeError("CMake >= 3.16 is required to build flashlight-sequence")
+        if version.parse(cmake_version) < version.parse("3.18"):
+            raise RuntimeError(
+                "CMake >= 3.18 is required to build flashlight-sequence Python bindings"
+            )
 
         # our CMakeLists builds all the extensions at once
         for ext in self.extensions:
@@ -103,9 +105,7 @@ setup(
     description="Flashlight Sequence bindings for python",
     long_description="",
     packages=["flashlight.lib.sequence"],
-    ext_modules=[
-        CMakeExtension("flashlight.lib.sequence.criterion"),
-    ],
+    ext_modules=[CMakeExtension("flashlight.lib.sequence.criterion")],
     cmdclass={"build_ext": CMakeBuild},
     zip_safe=False,
     license="BSD licensed, as found in the LICENSE file",
