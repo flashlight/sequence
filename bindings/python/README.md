@@ -7,18 +7,12 @@
 - [Python API Documentation](#python-api-documentation)
 
 ## Installation
-### Dependencies
-`python >= 3.6` is required with the following packages installed:
-- [packaging](https://pypi.org/project/packaging/)
-- [cmake](https://cmake.org/) >= 3.18, and `make`
-- CUDA is optionally required.
+CUDA is required if building CUDA kernel implementations with the Python package.
 
 ### Build Instructions
-
-Once the dependencies are satisfied, from the project root, use:
+From the project root, run:
 ```
-cd bindings/python
-python setup.py install
+pip install .
 ```
 
 or locally in editable mode (`-e` is required as libs are built outside of the bindings directory)
@@ -27,8 +21,6 @@ pip install -e .
 ```
 
 (`pypi` installation coming soon)
-
-**Note:** if you encounter errors, you'll probably have to `rm -rf build dist` before retrying the install.
 
 ### Advanced Options
 - `USE_CUDA=1` builds CUDA kernels for many included algorithms. CUDA >= 9 is required.
