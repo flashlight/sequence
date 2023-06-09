@@ -28,6 +28,7 @@ include(${PROJECT_SOURCE_DIR}/cmake/InternalUtils.cmake)
 
 # ----------------------------- Configuration -----------------------------
 
+option(FL_SEQUENCE_USE_OPENMP "Build with OpenMP support" OFF)
 option(FL_SEQUENCE_USE_CUDA "Build with CUDA support" OFF)
 option(FL_SEQUENCE_BUILD_TESTS "Build tests" ON)
 option(FL_SEQUENCE_BUILD_PYTHON "Build Python bindings" OFF)
@@ -65,6 +66,7 @@ if (FL_SEQUENCE_USE_CUDA)
   target_compile_definitions(
     flashlight-sequence
     PUBLIC
+    FL_SEQUENCE_USE_OPENMP
     FL_SEQUENCE_USE_CUDA
   )
 endif()

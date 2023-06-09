@@ -19,7 +19,7 @@ Flashlight Sequence has Python bindings. To install the bindings from source, [o
 git clone https://github.com/flashlight/sequence && cd sequence
 pip install .
 ```
-To install with CUDA support, set the environment variable `USE_CUDA=1` when running the install command.
+To install with CUDA support, set the environment variable `USE_CUDA=1` when running the install command. By default, bindings are installed with OpenMP support; to build and install without OpenMP, set USE_OPENMP=0 when buildling.
 
 See the [full Python binding documentation](bindings/python) for examples and more.
 
@@ -32,7 +32,7 @@ At minimum, C++ compilation requires:
 - [CMake](https://cmake.org/) — version 3.16 or later, and ``make``
 - A Linux-based operating system.
 
-**CUDA Support:** If building with CUDA support, CUDA >= 9 is recommended. To toggle CUDA support use the `FL_SEQUENCE_USE_CUDA` CMake option or the `USE_CUDA` environment variable when building the Python bindings.
+**CUDA Support:** If building with CUDA support, CUDA >= 9 is recommended. To toggle CUDA support use the `FL_SEQUENCE_USE_CUDA` CMake option or the `USE_CUDA` environment variable when building the Python bindings. To toggle OpenMP support, use the `FL_SEQUENCE_USE_OPENMP` CMake option or use the `USE_OPENMP` environment variable when building the Python bindings.
 
 **Tests:** If building tests, [Google Test](https://github.com/google/googletest) >= 1.12 is required, but is installed automatically on build if not found. The `FL_SEQUENCE_BUILD_TESTS` CMake option toggles building tests.
 
@@ -49,7 +49,7 @@ make -j$(nproc)
 make test    # run tests
 make install # install at the CMAKE_INSTALL_PREFIX
 ```
-To enable CUDA while building, pass `-DFL_SEQUENCE_USE_CUDA=ON` to CMake. To disable building tests, pass `-DFL_SEQUENCE_BUILD_TESTS=OFF`.
+To enable CUDA while building, pass `-DFL_SEQUENCE_USE_CUDA=ON` to CMake. To enable building with OpenMP, pass `-DFL_SEQUENCE_USE_OPENMP=ON` to CMake. To disable building tests, pass `-DFL_SEQUENCE_BUILD_TESTS=OFF`.
 
 If building with CUDA < 11, [NVIDIA cub](https://github.com/NVIDIA/cub) is required. It will be downloaded automatically if not found; the `FL_SEQUENCE_BUILD_STANDALONE` build option controls this behavior.
 
