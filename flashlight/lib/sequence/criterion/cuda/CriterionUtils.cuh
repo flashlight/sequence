@@ -13,6 +13,8 @@
 #include <cstddef>
 
 #include "flashlight/lib/sequence/criterion/Defines.h"
+#include "flashlight/lib/sequence/Defines.h"
+
 using fl::lib::seq::CriterionScaleMode;
 
 #if defined(__CUDA_ARCH__) && __CUDA_ARCH__ < 600
@@ -44,7 +46,7 @@ namespace lib {
 namespace cuda {
 
 template <class Float>
-struct CriterionUtils {
+FL_SEQ_API struct CriterionUtils {
   /**
    * B: batch size
    * L: target size

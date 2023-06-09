@@ -10,6 +10,8 @@
 #include <cstddef>
 
 #include "flashlight/lib/sequence/criterion/Defines.h"
+#include "flashlight/lib/sequence/Defines.h"
+
 using fl::lib::seq::CriterionScaleMode;
 
 namespace fl {
@@ -18,7 +20,7 @@ namespace cpu {
 
 /// Check CUDA header for docs.
 template <class Float>
-struct FullConnectionCriterion {
+FL_SEQ_API struct FullConnectionCriterion {
   static size_t getWorkspaceSize(int B, int T, int N);
 
   static void forward(
