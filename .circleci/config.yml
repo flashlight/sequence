@@ -61,6 +61,9 @@ commands:
           command: echo 'export PATH="$PATH:/c/Program Files/CMake/bin"' >> $BASH_ENV
   build_flashlight_sequence:
     parameters:
+      use_openmp:
+        type: string
+        default: "ON"
       use_cuda:
         type: string
         default: "ON"
@@ -80,6 +83,7 @@ commands:
             mkdir build && \
             cmake -S . -B build \
               -DBUILD_SHARED_LIBS=<< parameters.build_shared_libs >> \
+              -DFL_SEQUENCE_USE_OPENMP=<< parameters.use_openmp >> \
               -DFL_SEQUENCE_USE_CUDA=<< parameters.use_cuda >> \
               -DFL_SEQUENCE_CODE_COVERAGE=<< parameters.build_code_coverage >>
             cmake --build build --parallel

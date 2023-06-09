@@ -1,7 +1,9 @@
 cmake_minimum_required(VERSION 3.16)
 
-find_package(OpenMP REQUIRED)
-target_link_libraries(flashlight-sequence PRIVATE OpenMP::OpenMP_CXX)
+if (FL_SEQUENCE_USE_OPENMP)
+  find_package(OpenMP REQUIRED)
+  target_link_libraries(flashlight-sequence PRIVATE OpenMP::OpenMP_CXX)
+endif()
 
 target_sources(
   flashlight-sequence

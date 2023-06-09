@@ -34,6 +34,10 @@ def check_env_flag(name, default=""):
     return os.getenv(name, default).upper() in ["ON", "1", "YES", "TRUE", "Y"]
 
 
+def check_negative_env_flag(name, default="") -> bool:
+    return os.getenv(name, default).upper() in ["OFF", "0", "NO", "FALSE", "N"]
+
+
 def get_local_version_suffix() -> str:
     date_suffix = datetime.datetime.now().strftime("%Y%m%d")
     git_hash = subprocess.check_output(
@@ -84,6 +88,7 @@ class CMakeBuild(build_ext):
         ext_dir = str(Path(self.get_ext_fullpath(ext.name)).absolute().parent)
         source_dir = str(Path(__file__).absolute().parent)
         use_cuda = "ON" if check_env_flag("USE_CUDA") else "OFF"
+        use_openmp = "OFF" if check_negative_env_flag("USE_OPENMP") else "ON"
         cmake_args = [
             "-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=" + ext_dir,
             "-DPython3_EXECUTABLE=" + sys.executable,
@@ -92,6 +97,7 @@ class CMakeBuild(build_ext):
             "-DFL_SEQUENCE_BUILD_PYTHON=ON",
             "-DFL_SEQUENCE_BUILD_PYTHON_PACKAGE=ON",
             "-DFL_SEQUENCE_BUILD_STANDALONE=OFF",
+            "-DFL_SEQUENCE_USE_OPENMP=" + use_openmp,
             "-DFL_SEQUENCE_USE_CUDA=" + use_cuda,
         ]
         cfg = "Debug" if self.debug else "Release"
