@@ -24,7 +24,7 @@ To install with CUDA support, set the environment variable `USE_CUDA=1` when run
 See the [full Python binding documentation](bindings/python) for examples and more.
 
 ## Building and Installing
-[**From Source (C++)**](#building-from-source) | [**From Source (Python)**](bindings/python#build-instructions) | [**Adding to Your Own Project (C++)**](#adding-flashlight-sequence-to-a-c-project)
+[**From Source (C++)**](#building-from-source) | [**With `vcpkg` (C++)**](#with-vcpkg) | [**From Source (Python)**](bindings/python#build-instructions) | [**Adding to Your Own Project (C++)**](#adding-flashlight-sequence-to-a-c-project)
 
 ### Requirements
 At minimum, C++ compilation requires:
@@ -51,6 +51,16 @@ cmake --install build # install at the CMAKE_INSTALL_PREFIX
 To enable CUDA while building, pass `-DFL_SEQUENCE_USE_CUDA=ON` to CMake. To enable building with OpenMP, pass `-DFL_SEQUENCE_USE_OPENMP=ON` to CMake. To disable building tests, pass `-DFL_SEQUENCE_BUILD_TESTS=OFF`.
 
 If building with CUDA < 11, [NVIDIA cub](https://github.com/NVIDIA/cub) is required. It will be downloaded automatically if not found; the `FL_SEQUENCE_BUILD_STANDALONE` build option controls this behavior.
+
+#### With [`vcpkg`](https://vcpkg.io/)
+
+Flashlight Sequence can also be installed and used downstream with the [`vcpkg`](https://vcpkg.io/) package manager. The [port](https://github.com/microsoft/vcpkg/blob/master/ports/flashlight-sequence/) contains optional features for building with OpenMP and/or CUDA:
+```bash
+vcpkg install flashlight-sequence # no dependencies, or:
+vcpkg install "flashlight-sequence[cuda]" # with CUDA
+vcpkg install "flashlight-sequence[openmp]" # with OpenMP
+vcpkg install "flashlight-sequence[cuda,openmp]" # with both!
+```
 
 ### Adding Flashlight Sequence to a C++ Project
 
