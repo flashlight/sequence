@@ -9,7 +9,8 @@
 
 #include <cstring>
 
-#include "flashlight/lib/sequence/criterion/Defines.h"
+#include "flashlight/lib/sequence//criterion/Defines.h"
+#include "flashlight/lib/sequence/Defines.h"
 
 using fl::lib::seq::CriterionScaleMode;
 
@@ -19,7 +20,7 @@ namespace cpu {
 
 /// Check CUDA header for docs.
 template <class Float>
-struct CriterionUtils {
+struct FL_SEQ_API CriterionUtils {
   static void batchTargetSize(
       int B,
       int L,

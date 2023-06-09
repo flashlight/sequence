@@ -50,6 +50,8 @@ target_include_directories(
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
   )
 
+target_compile_definitions(flashlight-sequence PUBLIC FL_SEQ_DLL)
+
 if (FL_SEQUENCE_USE_CUDA)
   enable_language(CUDA)
 

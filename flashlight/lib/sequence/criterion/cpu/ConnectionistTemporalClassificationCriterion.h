@@ -8,12 +8,14 @@
 
 #include <cstddef>
 
+#include "flashlight/lib/sequence/Defines.h"
+
 namespace fl {
 namespace lib {
 namespace cpu {
 
 template <class Float>
-struct ConnectionistTemporalClassificationCriterion {
+struct FL_SEQ_API ConnectionistTemporalClassificationCriterion {
   static size_t getWorkspaceSize(int B, int T, int N, int L);
 
   static void viterbi(

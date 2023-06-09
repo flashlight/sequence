@@ -11,6 +11,8 @@
 #include <cmath>
 #include <vector>
 
+#include "flashlight/lib/sequence/criterion/Defines.h"
+
 namespace fl {
 namespace lib {
 namespace cpu {

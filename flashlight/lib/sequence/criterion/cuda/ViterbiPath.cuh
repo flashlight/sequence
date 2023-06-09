@@ -9,13 +9,15 @@
 
 #include <cuda_runtime.h>
 
+#include "flashlight/lib/sequence/Defines.h"
+
 namespace fl {
 namespace lib {
 namespace cuda {
 
 /// Computes max likelihood path using Viterbi algorithm.
 template <class Float>
-struct ViterbiPath {
+struct FL_SEQ_API ViterbiPath {
   /**
    * B: batch size
    * T: input length

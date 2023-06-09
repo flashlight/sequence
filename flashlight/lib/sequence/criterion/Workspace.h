@@ -58,6 +58,7 @@ class Workspace {
   const uintptr_t workspacePtr_;
   size_t offset_;
 };
+
 } // namespace seq
 } // namespace lib
 } // namespace fl

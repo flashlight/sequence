@@ -9,13 +9,15 @@
 
 #include <cstddef>
 
+#include "flashlight/lib/sequence/Defines.h"
+
 namespace fl {
 namespace lib {
 namespace cpu {
 
 /// Check CUDA header for docs.
 template <class Float>
-struct ViterbiPath {
+struct FL_SEQ_API ViterbiPath {
   static size_t getWorkspaceSize(int B, int T, int N);
 
   static void compute(
