@@ -12,6 +12,14 @@ gpu: &gpu
     image: ubuntu-2004-cuda-11.4:202110-01
   resource_class: gpu.nvidia.large
 
+executors:
+  windows_gpu:
+    machine:
+      image: windows-server-2019-nvidia:stable
+    # TODO: install a newer CUDA version if relying on newer
+    # C++ features not in nvcc 10.1
+    resource_class: windows.gpu.nvidia.medium
+
 orbs:
   win: circleci/windows@5.0.0
 
@@ -296,6 +304,19 @@ jobs:
           platform: "windows"
           use_cuda: "OFF"
 
+  windows_msvc_cuda:
+    parameters:
+      build_shared_libs:
+        type: string
+        default: "OFF"
+    executor: windows_gpu
+    steps:
+      - checkout
+      - install_msvc_build_dependencies
+      - build_flashlight_sequence:
+          platform: "windows"
+          use_cuda: "ON"
+
   windows_msvc_python:
     parameters:
       use_cuda:
@@ -335,5 +356,7 @@ workflows:
           name: "macOS Clang 13 Python"
       - windows_msvc:
           name: "Windows VS 17 2022 | MSVC 19.33"
+      - windows_msvc_cuda:
+          name: "Windows VS 17 2022 | MSVC 19.33 + CUDA"
       - windows_msvc_python:
           name: "Windows VS 17 2022 | MSVC 19.33 Python"
