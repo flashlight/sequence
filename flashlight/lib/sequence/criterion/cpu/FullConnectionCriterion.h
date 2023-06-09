@@ -9,8 +9,8 @@
 
 #include <cstddef>
 
-#include "flashlight/lib/sequence/criterion/Defines.h"
 #include "flashlight/lib/sequence/Defines.h"
+#include "flashlight/lib/sequence/criterion/Defines.h"
 
 using fl::lib::seq::CriterionScaleMode;
 
