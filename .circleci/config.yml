@@ -16,6 +16,8 @@ executors:
   windows_gpu:
     machine:
       image: windows-server-2019-nvidia:stable
+    # TODO: install a newer CUDA version if relying on newer
+    # C++ features not in nvcc 10.1
     resource_class: windows.gpu.nvidia.medium
 
 orbs:
@@ -98,15 +100,6 @@ commands:
             - run:
                 name: "Configure shared lib paths"
                 command: sudo ldconfig
-  # install_cuda:
-  #   parameters:
-  #     platform:
-  #       type: string
-  #   steps:
-  #     - when:
-  #         condition:
-  #           equal: ["windows", << parameters.platform >>]
-  #         steps:
   install_python_bindings:
     parameters:
       use_cuda:
