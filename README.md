@@ -6,7 +6,7 @@
 | [**Citing**](#citing)
 
 [![CircleCI](https://circleci.com/gh/flashlight/sequence.svg?style=shield)](https://app.circleci.com/pipelines/github/flashlight/sequence)
-[![Join the chat at https://gitter.im/flashlight-ml/community](https://img.shields.io/gitter/room/flashlight-ml/community)](https://gitter.im/flashlight-ml/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![codecov](https://codecov.io/gh/flashlight/sequence/branch/main/graph/badge.svg?token=rBp4AilMc0)](https://codecov.io/gh/flashlight/sequence)
+[![Join the chat at https://gitter.im/flashlight-ml/community](https://img.shields.io/gitter/room/flashlight-ml/community)](https://gitter.im/flashlight-ml/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Codecov](https://img.shields.io/codecov/c/github/flashlight/sequence)](https://codecov.io/gh/flashlight/sequence) [![Vcpkg](https://img.shields.io/vcpkg/v/flashlight-sequence)](https://vcpkg.link/ports/flashlight-sequence)
 
 *Flashlight Sequence* is a library with fast implementations of sequence-based operations. It includes:
 - A fast, parallel CPU implementation of the Viterbi algorithm for greedy "`argmax`-style" decoding
@@ -43,11 +43,10 @@ Instructions for building/installing the Python bindings from source [can be fou
 Building the C++ project from source is simple:
 ```bash
 git clone https://github.com/flashlight/sequence && cd sequence
-mkdir build && cd build
-cmake ..
-make -j$(nproc)
-make test    # run tests
-make install # install at the CMAKE_INSTALL_PREFIX
+cmake -S . -B build
+cmake --build build --parallel
+cd build && ctest && cd .. # run tests
+cmake --install build # install at the CMAKE_INSTALL_PREFIX
 ```
 To enable CUDA while building, pass `-DFL_SEQUENCE_USE_CUDA=ON` to CMake. To enable building with OpenMP, pass `-DFL_SEQUENCE_USE_OPENMP=ON` to CMake. To disable building tests, pass `-DFL_SEQUENCE_BUILD_TESTS=OFF`.
 
