@@ -9,7 +9,9 @@
 
 #include <cuda_runtime.h>
 
+#include "flashlight/lib/sequence/Defines.h"
 #include "flashlight/lib/sequence/criterion/Defines.h"
+
 using fl::lib::seq::CriterionScaleMode;
 
 namespace fl {
@@ -18,7 +20,7 @@ namespace cuda {
 
 /// The denominator of ASG loss. Reference: https://arxiv.org/abs/1609.03193
 template <class Float>
-struct FullConnectionCriterion {
+struct FL_SEQ_API FullConnectionCriterion {
   /**
    * B: batch size
    * T: input length
