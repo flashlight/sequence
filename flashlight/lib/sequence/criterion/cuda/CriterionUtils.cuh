@@ -46,7 +46,7 @@ namespace lib {
 namespace cuda {
 
 template <class Float>
-FL_SEQ_API struct CriterionUtils {
+struct FL_SEQ_API CriterionUtils {
   /**
    * B: batch size
    * L: target size

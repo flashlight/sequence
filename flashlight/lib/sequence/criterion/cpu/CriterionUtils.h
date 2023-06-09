@@ -20,7 +20,7 @@ namespace cpu {
 
 /// Check CUDA header for docs.
 template <class Float>
-FL_SEQ_API struct CriterionUtils {
+struct FL_SEQ_API CriterionUtils {
   static void batchTargetSize(
       int B,
       int L,

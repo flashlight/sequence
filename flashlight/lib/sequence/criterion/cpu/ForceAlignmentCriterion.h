@@ -20,7 +20,7 @@ namespace cpu {
 
 /// Check CUDA header for docs.
 template <class Float>
-FL_SEQ_API struct ForceAlignmentCriterion {
+struct FL_SEQ_API ForceAlignmentCriterion {
   static size_t getWorkspaceSize(int B, int T, int N, int L);
 
   static void forward(

@@ -15,7 +15,7 @@ namespace lib {
 namespace cpu {
 
 template <class Float>
-FL_SEQ_API struct ConnectionistTemporalClassificationCriterion {
+struct FL_SEQ_API ConnectionistTemporalClassificationCriterion {
   static size_t getWorkspaceSize(int B, int T, int N, int L);
 
   static void viterbi(

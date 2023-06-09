@@ -20,7 +20,7 @@ namespace cuda {
 
 /// The denominator of ASG loss. Reference: https://arxiv.org/abs/1609.03193
 template <class Float>
-FL_SEQ_API struct FullConnectionCriterion {
+struct FL_SEQ_API FullConnectionCriterion {
   /**
    * B: batch size
    * T: input length

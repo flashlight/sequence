@@ -20,7 +20,7 @@ namespace cpu {
 
 /// Check CUDA header for docs.
 template <class Float>
-FL_SEQ_API struct FullConnectionCriterion {
+struct FL_SEQ_API FullConnectionCriterion {
   static size_t getWorkspaceSize(int B, int T, int N);
 
   static void forward(

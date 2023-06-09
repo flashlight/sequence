@@ -17,7 +17,7 @@ namespace cuda {
 
 /// Computes max likelihood path using Viterbi algorithm.
 template <class Float>
-FL_SEQ_API struct ViterbiPath {
+struct FL_SEQ_API ViterbiPath {
   /**
    * B: batch size
    * T: input length
