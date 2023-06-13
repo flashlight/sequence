@@ -6,7 +6,7 @@
 | [**Citing**](#citing)
 
 [![CircleCI](https://circleci.com/gh/flashlight/sequence.svg?style=shield)](https://app.circleci.com/pipelines/github/flashlight/sequence)
-[![Join the chat at https://gitter.im/flashlight-ml/community](https://img.shields.io/gitter/room/flashlight-ml/community)](https://gitter.im/flashlight-ml/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![codecov](https://codecov.io/gh/flashlight/sequence/branch/main/graph/badge.svg?token=rBp4AilMc0)](https://codecov.io/gh/flashlight/sequence)
+[![Join the chat at https://gitter.im/flashlight-ml/community](https://img.shields.io/gitter/room/flashlight-ml/community)](https://gitter.im/flashlight-ml/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Codecov](https://img.shields.io/codecov/c/github/flashlight/sequence)](https://codecov.io/gh/flashlight/sequence) [![Vcpkg](https://img.shields.io/vcpkg/v/flashlight-sequence)](https://vcpkg.link/ports/flashlight-sequence)
 
 *Flashlight Sequence* is a library with fast implementations of sequence-based operations. It includes:
 - A fast, parallel CPU implementation of the Viterbi algorithm for greedy "`argmax`-style" decoding
@@ -19,12 +19,12 @@ Flashlight Sequence has Python bindings. To install the bindings from source, [o
 git clone https://github.com/flashlight/sequence && cd sequence
 pip install .
 ```
-To install with CUDA support, set the environment variable `USE_CUDA=1` when running the install command. By default, bindings are installed with OpenMP support; to build and install without OpenMP, set USE_OPENMP=0 when buildling.
+To install with CUDA support, set the environment variable `USE_CUDA=1` when running the install command. By default, bindings are installed with OpenMP support; to build and install without OpenMP, set the environment to have `USE_OPENMP=0` when buildling.
 
 See the [full Python binding documentation](bindings/python) for examples and more.
 
 ## Building and Installing
-[**From Source (C++)**](#building-from-source) | [**From Source (Python)**](bindings/python#build-instructions) | [**Adding to Your Own Project (C++)**](#adding-flashlight-sequence-to-a-c-project)
+[**From Source (C++)**](#building-from-source) | [**With `vcpkg` (C++)**](#with-vcpkg) | [**From Source (Python)**](bindings/python#build-instructions) | [**Adding to Your Own Project (C++)**](#adding-flashlight-sequence-to-a-c-project)
 
 ### Requirements
 At minimum, C++ compilation requires:
@@ -43,15 +43,24 @@ Instructions for building/installing the Python bindings from source [can be fou
 Building the C++ project from source is simple:
 ```bash
 git clone https://github.com/flashlight/sequence && cd sequence
-mkdir build && cd build
-cmake ..
-make -j$(nproc)
-make test    # run tests
-make install # install at the CMAKE_INSTALL_PREFIX
+cmake -S . -B build
+cmake --build build --parallel
+cd build && ctest && cd .. # run tests
+cmake --install build # install at the CMAKE_INSTALL_PREFIX
 ```
 To enable CUDA while building, pass `-DFL_SEQUENCE_USE_CUDA=ON` to CMake. To enable building with OpenMP, pass `-DFL_SEQUENCE_USE_OPENMP=ON` to CMake. To disable building tests, pass `-DFL_SEQUENCE_BUILD_TESTS=OFF`.
 
 If building with CUDA < 11, [NVIDIA cub](https://github.com/NVIDIA/cub) is required. It will be downloaded automatically if not found; the `FL_SEQUENCE_BUILD_STANDALONE` build option controls this behavior.
+
+#### With [`vcpkg`](https://vcpkg.io/)
+
+Flashlight Sequence can also be installed and used downstream with the [`vcpkg`](https://vcpkg.io/) package manager. The [port](https://github.com/microsoft/vcpkg/blob/master/ports/flashlight-sequence/) contains optional features for building with OpenMP and/or CUDA:
+```bash
+vcpkg install flashlight-sequence # no dependencies, or:
+vcpkg install "flashlight-sequence[cuda]" # with CUDA
+vcpkg install "flashlight-sequence[openmp]" # with OpenMP
+vcpkg install "flashlight-sequence[cuda,openmp]" # with both!
+```
 
 ### Adding Flashlight Sequence to a C++ Project
 
