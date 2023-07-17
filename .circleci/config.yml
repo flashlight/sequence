@@ -10,7 +10,7 @@ macos_env: &macos_env
 gpu: &gpu
   machine:
     image: ubuntu-2004-cuda-11.4:202110-01
-  resource_class: gpu.nvidia.large
+  resource_class: gpu.nvidia.medium
 
 executors:
   windows_gpu:
