@@ -10,7 +10,7 @@ import unittest
 
 
 class ImportTestCase(unittest.TestCase):
-    def test_import_lib_sequence(self):
+    def test_import_lib_sequence(self) -> None:
         from flashlight.lib.sequence import criterion
         from flashlight.lib.sequence.criterion import (
             CpuForceAlignmentCriterion,
