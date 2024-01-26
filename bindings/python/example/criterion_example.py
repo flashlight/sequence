@@ -12,7 +12,7 @@ import torch
 from flashlight.lib.sequence.criterion import ASGLoss, CriterionScaleMode
 
 
-if __name__ == "__main__":
+def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--cpu", action="store_true", help="Use cpu backend, otherwise use CUDA backend"
@@ -80,3 +80,7 @@ if __name__ == "__main__":
     loss.backward(grad)
     print("Gradients with respect to the ASG loss input", input.grad)
     print("Gradients with respect to the transition matrix", asg.transitions.grad)
+
+
+if __name__ == "__main__":
+    main()  # pragma: no cover
