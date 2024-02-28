@@ -1,0 +1,51 @@
+name: Build and run tests
+
+on: [push, pull_request]
+
+jobs:
+  build_and_test_cpu:
+    name: Build wheels on ${{ matrix.os }} ${{ matrix.label }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-22.04, windows-2022, macOS-12]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build project
+        run: |
+          cmake -S . -B build -DBUILD_SHARED_LIBS=ON
+          cmake --build build --parallel
+
+
+  # build_and_test_python:
+  #   name: Build wheels on ${{ matrix.os }} ${{ matrix.label }}
+  #   runs-on: ${{ matrix.os }}
+  #   strategy:
+  #     matrix:
+  #       os: [ubuntu-22.04, windows-2022, macOS-12]
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #       with:
+  #         fetch-depth: 0
+  #     - uses: actions/setup-python@v4
+  #       with:
+  #         python-version: '3.12'
+
+  #     # Use a venv for macOS runners
+  #     - name: Create Python virtual environment
+  #       run: |
+  #         python3 -m venv _flashlight-text-env
+  #         source _flashlight-text-env/bin/activate
+  #         echo "PATH=$PATH" >> $GITHUB_ENV
+  #       if: runner.os == 'macOS'
+    
+  #     - name: "Install Python Bindings"
+  #       run: |
+  #         pip install numpy
+  #         USE_CUDA=<< parameters.use_cuda >> pip install -v .
+
+  #     - name: Run Python binding tests
+  #       run: |
+  #         cd bindings/python/test
+  #         USE_CUDA=<< parameters.use_cuda >> python -m unittest discover -v .
