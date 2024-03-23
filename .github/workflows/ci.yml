@@ -12,6 +12,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Install CMake
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake
+        if: runner.os == 'ubuntu-22.04'
+
+      - name: Install CMake
+        run: |
+          choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System'
+        if: runner.os == 'windows-2022'
+
       - name: Build project
         run: |
           cmake -S . -B build -DBUILD_SHARED_LIBS=ON
