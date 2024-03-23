@@ -16,12 +16,12 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y cmake
-        if: runner.os == 'ubuntu-22.04'
+        if: runner.os == '4-core-ubuntu-gpu-t4'
 
       - name: Install CMake
         run: |
           choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System'
-        if: runner.os == 'windows-2022'
+        if: runner.os == '4-core-windows-gpu-t4'
 
       - name: Build project
         run: |
