@@ -20,7 +20,7 @@ using namespace fl::lib::seq;
  */
 __global__ void
 batchTargetSizeKernel(int L, int maxSize, const int* _target, int* targetSize) {
-  int b = blockIdx.x;
+  auto b = blockIdx.x;
   auto target = _target + b * L;
 
   __shared__ int idx;
@@ -31,7 +31,7 @@ batchTargetSizeKernel(int L, int maxSize, const int* _target, int* targetSize) {
 
   __syncthreads();
 
-  for (int i = L - 1 - threadIdx.x; i >= 0; i -= blockDim.x) {
+  for (auto i = L - 1 - threadIdx.x; i >= 0; i -= blockDim.x) {
     if (target[i] >= 0) {
       atomicMax(&idx, i + 1);
       break;
@@ -57,7 +57,7 @@ __global__ void computeScaleKernel(
     CriterionScaleMode scaleMode,
     const int* targetSize,
     Float* scale) {
-  for (int b = threadIdx.x; b < B; b += blockDim.x) {
+  for (auto b = threadIdx.x; b < B; b += blockDim.x) {
     switch (scaleMode) {
       case CriterionScaleMode::NONE:
         scale[b] = 1.0;

@@ -38,8 +38,8 @@ struct WorkspacePtrs {
 template <class Float>
 __global__ void
 computeInitial(int T, int N, const Float* input, WorkspacePtrs<Float> ws) {
-  int b = blockIdx.x;
-  for (int n = threadIdx.x; n < N; n += blockDim.x) {
+  auto b = blockIdx.x;
+  for (auto n = threadIdx.x; n < N; n += blockDim.x) {
     ws.alpha[b * 2 * N + n] = input[b * T * N + n];
   }
 }
@@ -76,7 +76,7 @@ __global__ void computeStep(
 
   cub::KeyValuePair<int, Float> threadMax;
   threadMax.value = -INFINITY;
-  for (int n = threadIdx.x; n < N; n += blockDim.x) {
+  for (auto n = threadIdx.x; n < N; n += blockDim.x) {
     Float val = alphaPrev[n] + (Final ? 0 : trans[m * N + n]);
     if (val > threadMax.value) {
       threadMax.key = n;

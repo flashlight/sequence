@@ -57,7 +57,7 @@ __global__ void forwardKernel(
     const Float* trans,
     Float* _loss,
     WorkspacePtrs<Float> ws) {
-  int b = blockIdx.x;
+  auto b = blockIdx.x;
   auto* alpha = &ws.alpha[b * T * _L];
   auto* input = &_input[b * T * N];
   auto* target = &_target[b * _L];
@@ -65,7 +65,7 @@ __global__ void forwardKernel(
   auto* transBuf2 = &ws.transBuf2[b * _L];
   int L = targetSize[b];
 
-  for (int i = threadIdx.x; i < L; i += blockDim.x) {
+  for (auto i = threadIdx.x; i < L; i += blockDim.x) {
     alpha[i] = i == 0 ? input[target[0]] : 0;
     transBuf1[i] = trans[target[i] * N + target[i]];
     transBuf2[i] = i > 0 ? trans[target[i] * N + target[i - 1]] : 0;
@@ -92,7 +92,7 @@ __global__ void forwardKernel(
       }
     }
 
-    for (int i = low + threadIdx.x; i < high; i += blockDim.x) {
+    for (auto i = low + threadIdx.x; i < high; i += blockDim.x) {
       double s1 = alphaPrev[i] + transBuf1[i];
       double s2 = alphaPrev[i - 1] + transBuf2[i];
       // lse = logSumExp(s1, s2)
@@ -124,7 +124,7 @@ __global__ void backwardKernel(
     Float* _inputGrad,
     Float* transGrad,
     WorkspacePtrs<Float> ws) {
-  int b = blockIdx.x;
+  auto b = blockIdx.x;
   auto* alpha = &ws.alpha[b * T * _L];
   auto* alphaGrad = &ws.alphaGrad[b * T * _L];
   auto* inputGrad = &_inputGrad[b * T * N];
@@ -154,7 +154,7 @@ __global__ void backwardKernel(
 
     __syncthreads();
 
-    for (int i = low1 + threadIdx.x; i < high1; i += blockDim.x) {
+    for (auto i = low1 + threadIdx.x; i < high1; i += blockDim.x) {
       atomicAdd(&inputCurGrad[target[i]], alphaCurGrad[i]);
     }
 
@@ -170,7 +170,7 @@ __global__ void backwardKernel(
       }
     }
 
-    for (int i = low + threadIdx.x; i < high; i += blockDim.x) {
+    for (auto i = low + threadIdx.x; i < high; i += blockDim.x) {
       double s1 = alphaPrev[i] + transBuf1[i];
       double s2 = alphaPrev[i - 1] + transBuf2[i];
       // d1, d2 = dLogSumExp(s1, s2)
@@ -198,7 +198,7 @@ __global__ void backwardKernel(
     gradScale = grad[b] * ws.scale[b];
   }
 
-  for (int i = threadIdx.x; i < L; i += blockDim.x) {
+  for (auto i = threadIdx.x; i < L; i += blockDim.x) {
     atomicAdd(&transBatchGrad[target[i] * N + target[i]], transBufGrad1[i]);
     if (i > 0) {
       atomicAdd(
@@ -208,11 +208,11 @@ __global__ void backwardKernel(
 
   __syncthreads();
 
-  for (int i = threadIdx.x; i < T * N; i += blockDim.x) {
+  for (auto i = threadIdx.x; i < T * N; i += blockDim.x) {
     inputGrad[i] *= gradScale;
   }
 
-  for (int i = threadIdx.x; i < N * N; i += blockDim.x) {
+  for (auto i = threadIdx.x; i < N * N; i += blockDim.x) {
     atomicAdd(&transGrad[i], gradScale * transBatchGrad[i]);
   }
 }
@@ -228,7 +228,7 @@ __global__ void viterbiPathKernel(
     const Float* trans,
     int* bestPaths,
     WorkspacePtrs<Float> ws) {
-  int b = blockIdx.x;
+  auto b = blockIdx.x;
   auto* alpha = &ws.alpha[b * T * _L];
   auto* input = &_input[b * T * N];
   auto* target = &_target[b * _L];
@@ -236,11 +236,11 @@ __global__ void viterbiPathKernel(
   auto* transBuf2 = &ws.transBuf2[b * _L];
   int L = targetSize[b];
 
-  for (int i = threadIdx.x; i < L * T; i += blockDim.x) {
+  for (auto i = threadIdx.x; i < L * T; i += blockDim.x) {
     alpha[i] = i == 0 ? input[target[0]] : -CUDART_INF_F;
   }
 
-  for (int i = threadIdx.x; i < L; i += blockDim.x) {
+  for (auto i = threadIdx.x; i < L; i += blockDim.x) {
     transBuf1[i] = trans[target[i] * N + target[i]];
     transBuf2[i] = i > 0 ? trans[target[i] * N + target[i - 1]] : 0;
   }
@@ -270,7 +270,7 @@ __global__ void viterbiPathKernel(
       }
     }
 
-    for (int i = low + threadIdx.x; i < high; i += blockDim.x) {
+    for (auto i = low + threadIdx.x; i < high; i += blockDim.x) {
       double s1 = alphaPrev[i] + transBuf1[i];
       double s2 = alphaPrev[i - 1] + transBuf2[i];
       alphaCur[i] = inputCur[target[i]] + max(s1, s2);

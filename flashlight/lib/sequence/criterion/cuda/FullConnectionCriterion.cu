@@ -46,8 +46,8 @@ struct WorkspacePtrs {
 template <class Float>
 __global__ void
 forwardInitial(int T, int N, const Float* input, WorkspacePtrs<Float> ws) {
-  int b = blockIdx.x;
-  for (int n = threadIdx.x; n < N; n += blockDim.x) {
+  auto b = blockIdx.x;
+  for (auto n = threadIdx.x; n < N; n += blockDim.x) {
     int k = b * T * N + n;
     ws.alpha[k] = input[k];
   }
@@ -84,7 +84,7 @@ __global__ void forwardStep(
   __shared__ double maxValue;
 
   double threadMax = -INFINITY;
-  for (int n = threadIdx.x; n < N; n += blockDim.x) {
+  for (auto n = threadIdx.x; n < N; n += blockDim.x) {
     double val = transBuf[n] = alphaPrev[n] + (Final ? 0 : trans[m * N + n]);
     threadMax = val > threadMax ? val : threadMax;
   }
@@ -97,7 +97,7 @@ __global__ void forwardStep(
   __syncthreads();
 
   double threadSum = 0;
-  for (int n = threadIdx.x; n < N; n += blockDim.x) {
+  for (auto n = threadIdx.x; n < N; n += blockDim.x) {
     threadSum += exp(transBuf[n] - maxValue);
   }
 
@@ -142,7 +142,7 @@ __global__ void backwardStep1(
   __shared__ double sumValue;
 
   double threadMax = -INFINITY;
-  for (int n = threadIdx.x; n < N; n += blockDim.x) {
+  for (auto n = threadIdx.x; n < N; n += blockDim.x) {
     double val = transBuf[n] = alphaPrev[n] + (Initial ? 0 : trans[m * N + n]);
     threadMax = val > threadMax ? val : threadMax;
   }
@@ -153,7 +153,7 @@ __global__ void backwardStep1(
   }
 
   double threadSum = 0;
-  for (int n = threadIdx.x; n < N; n += blockDim.x) {
+  for (auto n = threadIdx.x; n < N; n += blockDim.x) {
     transBuf[n] = exp(transBuf[n] - maxValue);
     threadSum += transBuf[n];
   }
@@ -165,7 +165,7 @@ __global__ void backwardStep1(
 
   __syncthreads();
 
-  for (int n = threadIdx.x; n < N; n += blockDim.x) {
+  for (auto n = threadIdx.x; n < N; n += blockDim.x) {
     if (Initial) {
       alphaPrevGrad[n] = transBuf[n] / sumValue;
     } else {
@@ -181,8 +181,8 @@ __global__ void backwardStep1(
  */
 template <class Float>
 __global__ void backwardStep2(int T, int N, int t, WorkspacePtrs<Float> ws) {
-  int b = blockIdx.x / N;
-  int m = blockIdx.x % N;
+  auto b = blockIdx.x / N;
+  auto m = blockIdx.x % N;
 
   auto* alphaPrevGrad = &ws.alphaGrad[b * T * N + (t - 1) * N];
 
@@ -190,7 +190,7 @@ __global__ void backwardStep2(int T, int N, int t, WorkspacePtrs<Float> ws) {
   __shared__ typename BlockReduce::TempStorage tempStorage;
 
   double threadSum = 0;
-  for (int n = threadIdx.x; n < N; n += blockDim.x) {
+  for (auto n = threadIdx.x; n < N; n += blockDim.x) {
     threadSum += ws.transBuf[b * N * N + n * N + m];
   }
 
@@ -212,7 +212,7 @@ __global__ void backwardFinal(
     Float* _inputGrad,
     Float* transGrad,
     WorkspacePtrs<Float> ws) {
-  int b = blockIdx.x;
+  auto b = blockIdx.x;
 
   auto* alphaGrad = &ws.alphaGrad[b * T * N];
   auto* inputGrad = &_inputGrad[b * T * N];
@@ -226,11 +226,11 @@ __global__ void backwardFinal(
 
   __syncthreads();
 
-  for (int i = threadIdx.x; i < T * N; i += blockDim.x) {
+  for (auto i = threadIdx.x; i < T * N; i += blockDim.x) {
     inputGrad[i] = gradScale * alphaGrad[i];
   }
 
-  for (int i = threadIdx.x; i < N * N; i += blockDim.x) {
+  for (auto i = threadIdx.x; i < N * N; i += blockDim.x) {
     atomicAdd(&transGrad[i], gradScale * transBatchGrad[i]);
   }
 }
